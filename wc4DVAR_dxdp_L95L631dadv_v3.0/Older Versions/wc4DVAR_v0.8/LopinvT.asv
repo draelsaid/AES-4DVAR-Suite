@@ -1,0 +1,28 @@
+function [x] = LopinvT(p,dp,s,n,fnl,fadj,schnl,schadj,dt)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% L Operator Inverse (Tranpose) for weak-constraint 4DVAR    %
+% [p]    - Model errors (4D matrix)                          %
+%   x    - State variables (4D matrix)                       % 
+%   n    - Assimilation window time                          %
+% fnl    - Non-linear model function handle                  %
+% fadj   - Adjoint model function handle                     %
+% schnl  - Non-linear model numerical scheme function handle %
+% schadj - Adjoint model numerical scheme function handle    %
+%  dt    - Timestep                                          %
+%   s    - Number of model errors (s+1 = subwindows)         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+x(:,n+1) = p(:,n+1); % First element of vector p is x_0
+Mx = p(:,n+1);
+
+for i=n:-(n/s):1
+
+  for k=(n/s):-1:1 % Subwindows
+ Mx = Mnl(Mx,fm,sch,dt,n);
+  end
+
+ x(:,i) = Mx + p(:,i);
+ Mx = x(:,i);
+end
+
+end
